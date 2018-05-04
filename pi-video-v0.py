@@ -2,12 +2,25 @@
 
 import picamera
 import time
+import os
 
 # AstroHackers Pi Camera launch
 # instantiating PiCamera
-print ('BOOTED UP')
-print ('Starting to use camera')
-print ('File saved as test.h264')
+print ('Starting camera recording')
+
+rootpath = os.path.dirname(os.path.abspath(__file__))
+mainpath = os.path.join(rootpath,'videos')
+
+if not os.path.isdir(mainpath):
+   os.mkdir(mainpath)
+
+print ('Files save in "videos" subdirectory')
+
+folder_count = len(next(os.walk(mainpath))[1])
+video_path = os.path.join(mainpath,str(folder_count))
+
+if not os.path.isdir(video_path):
+   os.mkdir(video_path)
 
 camera = picamera.PiCamera()
 
@@ -25,15 +38,15 @@ for i in range(1,60):
    camera.resolution = (1640,1232)
    camera.framerate = 30
    time.sleep(2)
-   camera.start_recording('test2-q23-%d.h264' % i, format='h264', quality=23)
+   camera.start_recording(os.path.join(video_path,'vid%d.h264' % i), format='h264', quality=23)
    camera.wait_recording(600)
    camera.stop_recording()
-   print ('Captured test-q23-%d.h264' % i)
+   print ('Captured vid%d.h264' % i)
 
    camera.resolution = (3280,2462)
    camera.start_preview()
    time.sleep(2)
-   camera.capture ('test-%d.jpg' % i)
-   print ('Captured test-%d.jpg' % i)
+   camera.capture(os.path.join(video_path,'pic%d.jpg' % i))
+   print ('Captured pic%d.jpg' % i)
 
 camera.close()
